@@ -13,5 +13,7 @@ for x in range(0, number_of_agents):
         graph_matrix[x][y] = rand
         graph_matrix[y][x] = rand
 
+np.savetxt('./results/1', graph_matrix, fmt='%i')
+
 print(graph_matrix)
 
