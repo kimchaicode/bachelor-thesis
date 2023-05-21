@@ -7,6 +7,8 @@ graph_matrix = np.random.randint(2, size=(number_of_agents, number_of_test_nodes
 
 # Optimization: Store as binary for smaller size
 np.savetxt('./results/1', graph_matrix, fmt='%i')
-
 print(graph_matrix)
 
+infection_vector = np.random.randint(2, size=number_of_agents)
+np.savetxt('./results/1.infection', infection_vector, fmt='%i')
+print(infection_vector)
