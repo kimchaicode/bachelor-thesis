@@ -3,11 +3,6 @@
 # Source: https://stackoverflow.com/questions/58122505/suppress-use-of-softmax-in-crossentropyloss-for-pytorch-neural-net
 # Answer: nn.CrossEntryLoss is the combination of nn.LogSoftmax() and nn.NLLLoss()
 
-
-# TODO Saturday
-# 2. Generate more data, e.g. 150 samples
-#    1. Update generator to generate simpler rows
-
 import numpy as np
 import pandas as pd
 
@@ -43,7 +38,10 @@ class NeuralNetwork(nn.Module):
 # 2. Load the training data
 training_inputs = agents.get_datasets("./data/agents.data")
 
-batch_size = 1
+# TODO
+# We have 150 rows in training_inputs. With this batch_size we will go through all of the data in 2 epochs.
+# Question: Is that okay or not?
+batch_size = 75
 training_loader = DataLoader(dataset=training_inputs, batch_size=batch_size, shuffle=True)
 
 # 3. Instantiate the network, the loss function and the optimizer
