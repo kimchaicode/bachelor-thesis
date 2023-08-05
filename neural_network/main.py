@@ -16,24 +16,15 @@ from torch.utils.data import TensorDataset, DataLoader
 from data import agents
 
 # 1. Set up the neural network with layers and activation function
-# TODO: Use nn.Sequential
-class NeuralNetwork(nn.Module):
-
+class NeuralNetwork(nn.Sequential):
     def __init__(self, input_size, hidden1_size, hidden2_size, num_classes):
-        super(NeuralNetwork, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden1_size)
-        self.relu1 = nn.ReLU()
-        self.fc2 = nn.Linear(hidden1_size, hidden2_size)
-        self.relu2 = nn.ReLU()
-        self.fc3 = nn.Linear(hidden2_size, num_classes)
-
-    def forward(self, x):
-        out = self.fc1(x)
-        out = self.relu1(out)
-        out = self.fc2(out)
-        out = self.relu2(out)
-        out = self.fc3(out)
-        return out
+        super(NeuralNetwork, self).__init__(
+            nn.Linear(input_size, hidden1_size),
+            nn.ReLU(),
+            nn.Linear(hidden1_size, hidden2_size),
+            nn.ReLU(),
+            nn.Linear(hidden2_size, num_classes)
+        )
 
 
 # 2. Load the training data
