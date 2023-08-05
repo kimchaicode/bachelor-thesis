@@ -16,6 +16,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from data import agents
 
 # 1. Set up the neural network with layers and activation function
+# TODO: Use nn.Sequential
 class NeuralNetwork(nn.Module):
 
     def __init__(self, input_size, hidden1_size, hidden2_size, num_classes):
