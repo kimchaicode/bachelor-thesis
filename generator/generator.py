@@ -4,11 +4,11 @@
 #         |graph_matrix|test_result_vector|class_number (infection vector as binary number)|
 
 # TODO: Questions
-# 1. How many agents do we want?
+# 1. How many agents do we want? like 1000, increase agents number, try 100 at first
 # 2. How many test nodes do we want?
 # 3. Is it okay to have more test nodes than agents?
 # 4. Do we need any more extra rules for the test assignment graph?
-# 5. How many samples do we need?
+# 5. How many samples do we need? too low, more than 500.
 
 import random
 
