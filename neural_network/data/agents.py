@@ -1,20 +1,28 @@
+import math
+
 import numpy as np
-import pandas as pd
+
 from torch.utils.data.dataset import Dataset
 
-class MultiClassDataset(Dataset):
+
+# From generator.py
+max_agents = 10
+number_of_samples_per_agent = 150
+number_of_samples = number_of_samples_per_agent * max_agents
+
+class AgentDataset(Dataset):
 
     def __init__(self, data):
         self.data = data
 
     def __getitem__(self, index):
         row = self.data[index]
-        class_index = len(row) - 1
+        output_index = len(row) - 1
         return (
             # "Agent features" = test assignment graph + test result vector as one array
-            row[0:class_index].astype(np.float32),
+            row[0:output_index].astype(np.float32),
             # Class number = infection status
-            row[class_index].astype(np.float32)
+            row[output_index].astype(np.float32)
         )
 
     def __len__(self):
@@ -24,12 +32,10 @@ class MultiClassDataset(Dataset):
 def get_datasets(file_path, train_ratio=0.80):
 
     data = np.genfromtxt(file_path, delimiter=',', dtype=int)
+    np.random.shuffle(data)
 
-    # TODO Split into training data and test data via `train_ratio`
-    # train_df = data.sample(frac=train_ratio, random_state=3)
-    # test_df = data.loc[~data.index.isin(train_df.index), :]
+    split_index = math.floor(number_of_samples * train_ratio)
+    training_data, validation_data = data[:split_index,:], data[split_index:,:]
 
-    # return IrisDataset(train_df), IrisDataset(test_df)
-
-    return MultiClassDataset(data)
+    return AgentDataset(training_data), AgentDataset(validation_data)
 
