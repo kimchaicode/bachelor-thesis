@@ -15,8 +15,8 @@ import random
 import numpy as np
 
 # Allow for variable configuration of agents and test nodes with these parameters
-min_agents, max_agents = 3, 7
-min_test_nodes, max_test_nodes = 2, 5
+min_agents, max_agents = 10, 10
+min_test_nodes, max_test_nodes = 5, 5
 
 number_of_samples = 150
 
