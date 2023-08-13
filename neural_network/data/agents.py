@@ -13,10 +13,8 @@ class MultiClassDataset(Dataset):
         return (
             # "Agent features" = test assignment graph + test result vector as one array
             row[0:class_index].astype(np.float32),
-            # Class number
-            # In our case we transformed the agent infection vector to a class as binary,
-            #   e.g if agents 1 and 3 are infected the class number is 5 (101 as binary).
-            row[class_index].astype(int)
+            # Class number = infection status
+            row[class_index].astype(np.float32)
         )
 
     def __len__(self):

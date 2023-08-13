@@ -2,8 +2,8 @@
 # Why is there no need to use nn.Softmax() in the output layer for a neural net when using nn.CrossEntropyLoss as a loss function
 # Source: https://stackoverflow.com/questions/58122505/suppress-use-of-softmax-in-crossentropyloss-for-pytorch-neural-net
 # Answer: nn.CrossEntryLoss is the combination of nn.LogSoftmax() and nn.NLLLoss()
-# NLLLOSS : The negative log likelihood loss. It is useful to train a classification problem with C classes.
-
+# NLLLOSS: The negative log likelihood loss. It is useful to train a classification problem with C classes.
+# BCELoss: Binary cross entry of predicted class.
 
 import torch
 import torch.nn as nn
@@ -33,7 +33,8 @@ class NeuralNetwork(nn.Sequential):
             nn.ReLU(),
             nn.Linear(100, 100),
             nn.ReLU(),
-            nn.Linear(100, 1)
+            nn.Linear(100, 1),
+            nn.Sigmoid()
         )
 
 # 2. Load the training data
@@ -51,7 +52,7 @@ training_loader = DataLoader(dataset=training_inputs, batch_size=batch_size, shu
 net = NeuralNetwork()
 
 # Why this specific loss function? => See above.
-loss_function = nn.CrossEntropyLoss()
+loss_function = nn.BCELoss()
 
 # TODO Why this specific learning rate, optimizer?
 learning_rate = 0.001
@@ -71,35 +72,28 @@ for epoch in range(num_epochs):
     train_correct = 0
     train_total = 0
 
-    for i, (items, classes) in enumerate(training_loader):
-
-        # Convert torch tensor to Variable
-        items = Variable(items)
-        classes = Variable(classes)
+    for i, (X_batch, y_batch) in enumerate(training_loader):
 
         # net.train()           # Put the network into training mode
+        y_batch = y_batch.unsqueeze(1)
 
-        outputs = net(items)  # Do the forward pass
-        loss = loss_function(outputs, classes) # Calculate the loss
+        y_pred = net(X_batch)  # Do the forward pass
+        loss = loss_function(y_pred, y_batch) # Calculate the loss
 
         optimizer.zero_grad() # Clear off the gradients from any past operation
         loss.backward()       # Calculate the gradients with help of back propagation
         optimizer.step()      # Ask the optimizer to adjust the parameters based on the gradients
-
-        # Record the correct predictions for training data
-        train_total += classes.size(0)
-        _, predicted = torch.max(outputs.data, 1)
-        train_correct += (predicted == classes.data).sum()
 
         print ('Epoch %d/%d, Iteration %d/%d, Loss: %.4f'
                %(epoch+1, num_epochs, i+1, len(training_inputs)//batch_size, loss.data.item()))
 
     # net.eval()                 # Put the network into evaluation mode
 
-    # Book keeping
-    # Record the loss
+    # Evaluate accuracy at end of each epoch
+    # Record the training loss and accuracy
     train_loss.append(loss.data.item())
-    train_accuracy.append((100 * train_correct / train_total))
+    accuracy = (y_pred.round() == y_batch).float().mean()
+    train_accuracy.append(accuracy)
 
     # How did we do on the test set (the unseen set)
     # Record the correct predictions for test data
