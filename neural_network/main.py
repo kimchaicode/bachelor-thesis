@@ -25,12 +25,10 @@ class NeuralNetwork(nn.Sequential):
             nn.Linear(hidden2_size, num_classes)
         )
 
-# TODO
-# Upload the agents.data(textfile) from generator.py into main.py
 # 2. Load the training data
+# TODO: Upload the agents.data(textfile) from generator.py into main.py
 training_inputs = agents.get_datasets("./data/agents.data")
 
-# TODO
 # We have 150 rows in training_inputs. With this batch_size we will go through all of the data in 2 epochs.
 # Question: Is that okay or not?
 # batch-size = 75 is okay
@@ -45,10 +43,9 @@ net = NeuralNetwork(8, 100, 50, 8)
 # Why this specific loss function? => See above.
 loss_function = nn.CrossEntropyLoss()
 
-# TODO Why this specific learning rate, optimizer, (nesterov) momentum, and dampening?
-# avik : we dont need momentum (momentum to be zero here)
+# TODO Why this specific learning rate, optimizer?
 learning_rate = 0.001
-optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate, nesterov=True, momentum=0.9, dampening=0)
+optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)
 
 
 # 5. Train the neural network, 500 epochs
