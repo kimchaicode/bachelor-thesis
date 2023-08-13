@@ -54,9 +54,11 @@ net = NeuralNetwork()
 # Why this specific loss function? => See above.
 loss_function = nn.BCELoss()
 
-# TODO Why this specific learning rate, optimizer?
+# TODO Why this specific learning rate?
+# Optimizer: "Adam converges faster, SGD generalizes better than Adam and thus results in improved final performance"
+#   See https://medium.com/geekculture/a-2021-guide-to-improving-cnns-optimizers-adam-vs-sgd-495848ac6008
 learning_rate = 0.001
-optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)
+optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
 
 # 5. Train the neural network, 500 epochs
