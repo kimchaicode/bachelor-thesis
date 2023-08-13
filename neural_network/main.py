@@ -14,15 +14,26 @@ from torch.utils.data import TensorDataset, DataLoader
 
 from data import agents
 
+
+# From generator.py
+max_agents = 10
+max_test_nodes = 5
+
+# input is of the following form: (test assignment graph, test result vector, agent identifier)
+# size of test assignment graph = agents.max_agents * agents.max_test_nodes
+# size of test result vector = agents.max_test_nodes
+# size of agent identifier = 1
+num_input_nodes = max_agents * max_test_nodes + max_test_nodes + 1
+
 # 1. Set up the neural network with layers and activation function
 class NeuralNetwork(nn.Sequential):
-    def __init__(self, input_size, hidden1_size, hidden2_size, num_classes):
+    def __init__(self):
         super(NeuralNetwork, self).__init__(
-            nn.Linear(input_size, hidden1_size),
+            nn.Linear(num_input_nodes, 100),
             nn.ReLU(),
-            nn.Linear(hidden1_size, hidden2_size),
+            nn.Linear(100, 100),
             nn.ReLU(),
-            nn.Linear(hidden2_size, num_classes)
+            nn.Linear(100, 1)
         )
 
 # 2. Load the training data
@@ -36,9 +47,8 @@ batch_size = 75
 training_loader = DataLoader(dataset=training_inputs, batch_size=batch_size, shuffle=True)
 
 # 3. Instantiate the network, the loss function and the optimizer
-# TODO
-# from Avik : hidden layer should be same size
-net = NeuralNetwork(8, 100, 50, 8)
+# From Avik : hidden layer should be same size
+net = NeuralNetwork()
 
 # Why this specific loss function? => See above.
 loss_function = nn.CrossEntropyLoss()
