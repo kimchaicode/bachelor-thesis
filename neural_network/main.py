@@ -39,13 +39,15 @@ class NeuralNetwork(nn.Sequential):
 
 # 2. Load the training data
 # TODO: Upload the agents.data(textfile) from generator.py into main.py
-training_inputs = agents.get_datasets("./data/agents.data")
+training_inputs, validation_inputs = agents.get_datasets("./data/agents.data")
 
 # We have 150 rows in training_inputs. With this batch_size we will go through all of the data in 2 epochs.
 # Question: Is that okay or not?
 # batch-size = 75 is okay
 batch_size = 75
 training_loader = DataLoader(dataset=training_inputs, batch_size=batch_size, shuffle=True)
+validation_loader = DataLoader(dataset=validation_inputs, batch_size=len(validation_inputs), shuffle=True)
+
 
 # 3. Instantiate the network, the loss function and the optimizer
 # From Avik : hidden layer should be same size
@@ -64,22 +66,22 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 # 5. Train the neural network, 500 epochs
 num_epochs = 500
 
+f1_score = BinaryF1Score()
+
 train_loss = []
 train_accuracy = []
-test_loss = []
-test_accuracy = []
+train_f1_scores = []
+validation_loss = []
+validation_accuracy = []
+validation_f1_scores = []
 
-f1_scores = []
-f1_score = BinaryF1Score()
 
 for epoch in range(num_epochs):
 
-    train_correct = 0
-    train_total = 0
-
     for i, (X_batch, y_batch) in enumerate(training_loader):
 
-        # net.train()           # Put the network into training mode
+        net.train()           # Put the network into training mode
+
         y_batch = y_batch.unsqueeze(1)
 
         y_pred = net(X_batch)  # Do the forward pass
@@ -92,47 +94,46 @@ for epoch in range(num_epochs):
         print ('Epoch %d/%d, Iteration %d/%d, Loss: %.4f'
                %(epoch+1, num_epochs, i+1, len(training_inputs)//batch_size, loss.data.item()))
 
-    # net.eval()                 # Put the network into evaluation mode
+    net.eval()                 # Put the network into evaluation mode
 
     # Evaluate accuracy at end of each epoch
     # Record the training loss and accuracy
-    train_loss.append(loss.data.item())
     accuracy = (y_pred.round() == y_batch).float().mean()
     train_accuracy.append(accuracy)
+    train_loss.append(loss.data.item())
+    train_f1_scores.append(f1_score(y_pred, y_batch))
 
-    f1_scores.append(f1_score(y_pred, y_batch))
+    # How did we do on the validation set (the unseen set)
+    # Record the correct predictions for validation data
+    X_val, y_val = next(iter(validation_loader))
+    y_val = y_val.unsqueeze(1)
 
-    # How did we do on the test set (the unseen set)
-    # Record the correct predictions for test data
-    # test_items = torch.FloatTensor(test_ds.data.values[:, 0:4])
-    # test_classes = torch.LongTensor(test_ds.data.values[:, 4])
+    y_pred_val = net(X_val)
+    loss = loss_function(y_pred_val, y_val)
+    accuracy = (y_pred_val.round() == y_val).float().mean()
 
-    # outputs = net(Variable(test_items))
-    # loss = criterion(outputs, Variable(test_classes))
-    # test_loss.append(loss.data.item())
-    # _, predicted = torch.max(outputs.data, 1)
-    # total = test_classes.size(0)
-    # correct = (predicted == test_classes).sum()
-    # test_accuracy.append((100 * correct / total))
+    validation_accuracy.append(accuracy)
+    validation_loss.append(loss.data.item())
+    validation_f1_scores.append(f1_score(y_pred_val, y_val))
 
 
 fig = plt.figure(figsize=(12, 8))
 plt.plot(train_accuracy, label='train accuracy')
-# plt.plot(test_accuracy, label='test accuracy')
+plt.plot(validation_accuracy, label='test accuracy')
 plt.title("Train and Test Accuracy")
 plt.legend()
 plt.show()
 
 fig = plt.figure(figsize=(12, 8))
 plt.plot(train_loss, label='train loss')
-# plt.plot(test_loss, label='test loss')
+plt.plot(validation_loss, label='test loss')
 plt.title("Train and Test Loss")
 plt.legend()
 plt.show()
 
 fig = plt.figure(figsize=(12, 8))
-plt.plot(f1_scores, label='f1 score')
-# plt.plot(test_accuracy, label='test accuracy')
+plt.plot(train_f1_scores, label='train f1')
+plt.plot(validation_f1_scores, label='test f1')
 plt.title("F1 Score")
 plt.legend()
 plt.show()
