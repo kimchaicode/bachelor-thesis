@@ -9,8 +9,8 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
-from torch.autograd import Variable
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import DataLoader
+from torchmetrics.classification import BinaryF1Score
 
 from data import agents
 
@@ -67,6 +67,9 @@ train_accuracy = []
 test_loss = []
 test_accuracy = []
 
+f1_scores = []
+f1_score = BinaryF1Score()
+
 for epoch in range(num_epochs):
 
     train_correct = 0
@@ -95,6 +98,8 @@ for epoch in range(num_epochs):
     accuracy = (y_pred.round() == y_batch).float().mean()
     train_accuracy.append(accuracy)
 
+    f1_scores.append(f1_score(y_pred, y_batch))
+
     # How did we do on the test set (the unseen set)
     # Record the correct predictions for test data
     # test_items = torch.FloatTensor(test_ds.data.values[:, 0:4])
@@ -110,6 +115,13 @@ for epoch in range(num_epochs):
 
 
 fig = plt.figure(figsize=(12, 8))
+plt.plot(train_accuracy, label='train accuracy')
+# plt.plot(test_accuracy, label='test accuracy')
+plt.title("Train and Test Accuracy")
+plt.legend()
+plt.show()
+
+fig = plt.figure(figsize=(12, 8))
 plt.plot(train_loss, label='train loss')
 # plt.plot(test_loss, label='test loss')
 plt.title("Train and Test Loss")
@@ -117,8 +129,8 @@ plt.legend()
 plt.show()
 
 fig = plt.figure(figsize=(12, 8))
-plt.plot(train_accuracy, label='train accuracy')
+plt.plot(f1_scores, label='f1 score')
 # plt.plot(test_accuracy, label='test accuracy')
-plt.title("Train and Test Accuracy")
+plt.title("F1 Score")
 plt.legend()
 plt.show()
