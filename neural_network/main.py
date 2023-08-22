@@ -81,8 +81,8 @@ learning_rate = 0.001
 optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)
 
 
-# 5. Train the neural network, 500 epochs
-num_epochs = 500
+# 5. Train the neural network
+num_epochs = 100
 
 f1_score = BinaryF1Score()
 
