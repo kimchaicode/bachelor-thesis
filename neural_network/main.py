@@ -45,6 +45,7 @@ from torch.utils.data import DataLoader
 from torchmetrics.classification import BinaryConfusionMatrix, BinaryF1Score
 
 from data import agents
+from imbalanced_dataset import get_weighted_random_sampler
 
 # From generator.py
 max_agents = 10
@@ -72,11 +73,9 @@ class NeuralNetwork(nn.Sequential):
 # TODO: Upload the agents.data(textfile) from generator.py into main.py
 training_inputs, validation_inputs = agents.get_datasets("./data/agents.data")
 
-# We have 150 rows in training_inputs. With this batch_size we will go through all of the data in 2 epochs.
-# Question: Is that okay or not?
-# batch-size = 75 is okay
-batch_size = 75
-training_loader = DataLoader(dataset=training_inputs, batch_size=batch_size, shuffle=True)
+batch_size = 100
+sampler = get_weighted_random_sampler(training_inputs)
+training_loader = DataLoader(dataset=training_inputs, batch_size=batch_size, sampler=sampler)
 validation_loader = DataLoader(dataset=validation_inputs, batch_size=len(validation_inputs), shuffle=True)
 
 
