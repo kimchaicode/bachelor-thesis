@@ -5,6 +5,26 @@
 # NLLLOSS: The negative log likelihood loss. It is useful to train a classification problem with C classes.
 # BCELoss: Binary cross entry of predicted class.
 
+# Hyperparemeters we can adjust
+# 1. Learning rate
+# 2. Number of epochs
+# 3. Batch size
+# 4. Dropout Rate
+# 5. Pruning
+# 6. Regularization Strength
+#    L1, L2
+# 7. Optimization Algorithm
+#    SGD, Adam
+# 8. Model architecture
+#    Number of nodes in hidden layer
+
+# 8. Model architecture
+# According to https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw/1097#1097
+# > One hidden layer is sufficient for the large majority of problems.
+# > The situations in which performance improves with a second (or third, etc.) hidden layer are very few.
+# > the optimal size of the hidden layer is usually between the size of the input and size of the output layers
+# > the number of neurons in that layer is the mean of the neurons in the input and output layers.
+
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
@@ -13,7 +33,6 @@ from torch.utils.data import DataLoader
 from torchmetrics.classification import BinaryConfusionMatrix, BinaryF1Score
 
 from data import agents
-
 
 # From generator.py
 max_agents = 10
@@ -24,16 +43,15 @@ max_test_nodes = 5
 # size of test result vector = agents.max_test_nodes
 # size of agent identifier = 1
 num_input_nodes = max_agents * max_test_nodes + max_test_nodes + 1
+num_hidden_nodes = round(num_input_nodes / 2)
 
 # 1. Set up the neural network with layers and activation function
 class NeuralNetwork(nn.Sequential):
     def __init__(self):
         super(NeuralNetwork, self).__init__(
-            nn.Linear(num_input_nodes, 100),
+            nn.Linear(num_input_nodes, num_hidden_nodes),
             nn.ReLU(),
-            nn.Linear(100, 100),
-            nn.ReLU(),
-            nn.Linear(100, 1),
+            nn.Linear(num_hidden_nodes, 1),
             nn.Sigmoid()
         )
 
