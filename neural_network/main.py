@@ -10,7 +10,7 @@ import torch.nn as nn
 import matplotlib.pyplot as plt
 
 from torch.utils.data import DataLoader
-from torchmetrics.classification import BinaryF1Score
+from torchmetrics.classification import BinaryConfusionMatrix, BinaryF1Score
 
 from data import agents
 
@@ -115,6 +115,22 @@ for epoch in range(num_epochs):
     validation_accuracy.append(accuracy)
     validation_loss.append(loss.data.item())
     validation_f1_scores.append(f1_score(y_pred_val, y_val))
+
+
+# Create a confusion matrix after training on the validation set
+confusion_matrix = BinaryConfusionMatrix()
+
+predictions = []
+targets = []
+
+for inputs, labels in validation_loader:
+    y_pred = net(inputs)
+
+    predictions.extend(y_pred)
+    targets.extend(labels.data)
+
+confusion_matrix.update(torch.tensor(predictions), torch.tensor(targets))
+confusion_matrix.plot()
 
 
 fig = plt.figure(figsize=(12, 8))
