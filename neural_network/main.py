@@ -23,6 +23,9 @@
 # too large => learning a sub-optimal set of weights too fast or unstable training process
 # The learning rate may be the most important hyperparameter when configuring your neural network.
 
+# 4. Dropout Rate
+# prevent overfitting by randomly deactivating a fraction of neurons during each forward pass of the training phase
+
 # 7. Optimization Algorithm
 # See https://medium.com/geekculture/a-2021-guide-to-improving-cnns-optimizers-adam-vs-sgd-495848ac6008
 # "Adam converges faster, SGD generalizes better than Adam and thus results in improved final performance"
@@ -60,6 +63,7 @@ class NeuralNetwork(nn.Sequential):
         super(NeuralNetwork, self).__init__(
             nn.Linear(num_input_nodes, num_hidden_nodes),
             nn.ReLU(),
+            # nn.Dropout(p=0.2),
             nn.Linear(num_hidden_nodes, 1),
             nn.Sigmoid()
         )
