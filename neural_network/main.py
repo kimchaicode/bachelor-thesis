@@ -18,6 +18,15 @@
 # 8. Model architecture
 #    Number of nodes in hidden layer
 
+# 1. Learning rate
+# too small => may result in a long training process that could get stuck
+# too large => learning a sub-optimal set of weights too fast or unstable training process
+# The learning rate may be the most important hyperparameter when configuring your neural network.
+
+# 7. Optimization Algorithm
+# See https://medium.com/geekculture/a-2021-guide-to-improving-cnns-optimizers-adam-vs-sgd-495848ac6008
+# "Adam converges faster, SGD generalizes better than Adam and thus results in improved final performance"
+
 # 8. Model architecture
 # According to https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw/1097#1097
 # > One hidden layer is sufficient for the large majority of problems.
@@ -74,9 +83,6 @@ net = NeuralNetwork()
 # Why this specific loss function? => See above.
 loss_function = nn.BCELoss()
 
-# TODO Why this specific learning rate?
-# Optimizer: "Adam converges faster, SGD generalizes better than Adam and thus results in improved final performance"
-#   See https://medium.com/geekculture/a-2021-guide-to-improving-cnns-optimizers-adam-vs-sgd-495848ac6008
 learning_rate = 0.001
 optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)
 
@@ -153,21 +159,21 @@ confusion_matrix.plot()
 
 fig = plt.figure(figsize=(12, 8))
 plt.plot(train_accuracy, label='train accuracy')
-plt.plot(validation_accuracy, label='test accuracy')
-plt.title("Train and Test Accuracy")
+plt.plot(validation_accuracy, label='validation accuracy')
+plt.title("Train and Validation Accuracy")
 plt.legend()
 plt.show()
 
 fig = plt.figure(figsize=(12, 8))
 plt.plot(train_loss, label='train loss')
-plt.plot(validation_loss, label='test loss')
-plt.title("Train and Test Loss")
+plt.plot(validation_loss, label='validation loss')
+plt.title("Train and Validation Loss")
 plt.legend()
 plt.show()
 
 fig = plt.figure(figsize=(12, 8))
 plt.plot(train_f1_scores, label='train f1')
-plt.plot(validation_f1_scores, label='test f1')
+plt.plot(validation_f1_scores, label='validation f1')
 plt.title("F1 Score")
 plt.legend()
 plt.show()
