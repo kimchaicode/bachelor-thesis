@@ -4,6 +4,7 @@
 import numpy as np
 
 from sklearn import metrics
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
@@ -22,9 +23,18 @@ y = np.array([[row[len(row) - 1]] for row in data])
 
 X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
 
-# LogisticRegression
-reg_log = LogisticRegression()
-reg_log.fit(X_train, y_train)
-y_pred = reg_log.predict(X_validation)
+# Logistic regression
+# reg_log = LogisticRegression()
+# reg_log.fit(X_train, y_train)
+# y_pred = reg_log.predict(X_validation)
+
+# print(metrics.classification_report(y_validation, y_pred))
+
+# Random forest decision tree
+reg_rf = RandomForestClassifier()
+reg_rf.fit(X_train, y_train)
+y_pred = reg_rf.predict(X_validation)
 
 print(metrics.classification_report(y_validation, y_pred))
+
+
