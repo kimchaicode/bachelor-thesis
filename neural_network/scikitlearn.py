@@ -11,12 +11,13 @@ from imblearn.pipeline import Pipeline
 from imblearn.under_sampling import RandomUnderSampler
 
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score, train_test_split, RepeatedStratifiedKFold
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 
 data = np.genfromtxt("./data/agents.data", delimiter=',', dtype=int)
@@ -27,23 +28,28 @@ y = np.array([row[len(row) - 1] for row in data])
 
 X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
 
-print("Destribution before...")
-counter = Counter(y_train)
-print(counter)
+# Apply over- and undersampling
+# print("Destribution before...")
+# counter = Counter(y_train)
+# print(counter)
 
-oversample = SMOTE(sampling_strategy=0.15)
-undersample = RandomUnderSampler(sampling_strategy=0.5)
-pipeline = Pipeline(steps=[('oversample', oversample), ('undersample', undersample)])
-X_train, y_train = pipeline.fit_resample(X_train, y_train)
+# oversample = SMOTE(sampling_strategy=0.15)
+# undersample = RandomUnderSampler(sampling_strategy=0.5)
+# pipeline = Pipeline(steps=[('oversample', oversample), ('undersample', undersample)])
+# X_train, y_train = pipeline.fit_resample(X_train, y_train)
 
-print("Destribution after...")
-counter = Counter(y_train)
-print(counter)
+# print("Destribution after...")
+# counter = Counter(y_train)
+# print(counter)
+
+
+# Try different classifiers...
+# ============================
 
 # Logistic regression
-reg_log = LogisticRegression()
-reg_log.fit(X_train, y_train)
-y_pred = reg_log.predict(X_validation)
+# reg_log = LogisticRegression()
+# reg_log.fit(X_train, y_train)
+# y_pred = reg_log.predict(X_validation)
 
 
 # Random forest decision tree
@@ -64,4 +70,22 @@ y_pred = reg_log.predict(X_validation)
 # y_pred = reg_knn.predict(X_validation)
 
 
-print(metrics.classification_report(y_validation, y_pred))
+# Decision tree
+# reg_dt = DecisionTreeClassifier()
+# reg_dt.fit(X_train, y_train)
+# y_pred = reg_dt.predict(X_validation)
+
+# print(metrics.classification_report(y_validation, y_pred))
+
+
+# Try different values for k_neighbors and print the ROC area under curve metric
+k_values = [1, 2, 3, 4, 5, 6, 7]
+for k in k_values:
+    steps = [('over', SMOTE(sampling_strategy=0.15, k_neighbors=k)), ('under', RandomUnderSampler(sampling_strategy=0.5)), ('model', DecisionTreeClassifier())]
+    pipeline = Pipeline(steps=steps)
+
+    cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    scores = cross_val_score(pipeline, X, y, scoring='roc_auc', cv=cv, n_jobs=-1)
+    score = np.mean(scores)
+    print('> k=%d, Mean ROC AUC: %.3f' % (k, score))
+
