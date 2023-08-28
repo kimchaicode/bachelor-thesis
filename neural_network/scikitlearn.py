@@ -2,14 +2,20 @@
 # https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html
 
 import numpy as np
+import matplotlib.pyplot as plt
+
+from collections import Counter
+
+from imblearn.over_sampling import SMOTE
 
 from sklearn import metrics
+from sklearn.model_selection import train_test_split
+
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 
-from sklearn.model_selection import train_test_split
 
 
 # From generator.py
@@ -26,10 +32,21 @@ y = np.array([row[len(row) - 1] for row in data])
 
 X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
 
+print("Destribution before...")
+counter = Counter(y_train)
+print(counter)
+
+oversample = SMOTE()
+X_train, y_train = oversample.fit_resample(X_train, y_train)
+
+print("Destribution after...")
+counter = Counter(y_train)
+print(counter)
+
 # Logistic regression
-# reg_log = LogisticRegression()
-# reg_log.fit(X_train, y_train)
-# y_pred = reg_log.predict(X_validation)
+reg_log = LogisticRegression()
+reg_log.fit(X_train, y_train)
+y_pred = reg_log.predict(X_validation)
 
 
 # Random forest decision tree
@@ -45,9 +62,9 @@ X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=
 
 
 # Nearest neighbours
-reg_knn = KNeighborsClassifier()
-reg_knn.fit(X_train, y_train)
-y_pred = reg_knn.predict(X_validation)
+# reg_knn = KNeighborsClassifier()
+# reg_knn.fit(X_train, y_train)
+# y_pred = reg_knn.predict(X_validation)
+
 
 print(metrics.classification_report(y_validation, y_pred))
-
