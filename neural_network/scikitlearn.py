@@ -6,6 +6,8 @@ import numpy as np
 from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+
 from sklearn.model_selection import train_test_split
 
 
@@ -19,7 +21,7 @@ data = np.genfromtxt("./data/agents.data", delimiter=',', dtype=int)
 
 # TODO: Optimize splitting
 X = np.array([row[:len(row) - 1] for row in data])
-y = np.array([[row[len(row) - 1]] for row in data])
+y = np.array([row[len(row) - 1] for row in data])
 
 X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
 
@@ -31,10 +33,16 @@ X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=
 # print(metrics.classification_report(y_validation, y_pred))
 
 # Random forest decision tree
-reg_rf = RandomForestClassifier()
-reg_rf.fit(X_train, y_train)
-y_pred = reg_rf.predict(X_validation)
+# reg_rf = RandomForestClassifier()
+# reg_rf.fit(X_train, y_train)
+# y_pred = reg_rf.predict(X_validation)
+
+# print(metrics.classification_report(y_validation, y_pred))
+
+# Support vector machine
+reg_svc = SVC()
+reg_svc.fit(X_train, y_train)
+y_pred = reg_svc.predict(X_validation)
 
 print(metrics.classification_report(y_validation, y_pred))
-
 
