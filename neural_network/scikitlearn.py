@@ -4,9 +4,10 @@
 import numpy as np
 
 from sklearn import metrics
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 
 from sklearn.model_selection import train_test_split
 
@@ -30,19 +31,23 @@ X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=
 # reg_log.fit(X_train, y_train)
 # y_pred = reg_log.predict(X_validation)
 
-# print(metrics.classification_report(y_validation, y_pred))
 
 # Random forest decision tree
 # reg_rf = RandomForestClassifier()
 # reg_rf.fit(X_train, y_train)
 # y_pred = reg_rf.predict(X_validation)
 
-# print(metrics.classification_report(y_validation, y_pred))
 
 # Support vector machine
-reg_svc = SVC()
-reg_svc.fit(X_train, y_train)
-y_pred = reg_svc.predict(X_validation)
+# reg_svc = SVC()
+# reg_svc.fit(X_train, y_train)
+# y_pred = reg_svc.predict(X_validation)
+
+
+# Nearest neighbours
+reg_knn = KNeighborsClassifier()
+reg_knn.fit(X_train, y_train)
+y_pred = reg_knn.predict(X_validation)
 
 print(metrics.classification_report(y_validation, y_pred))
 
