@@ -18,6 +18,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 
 
 data = np.genfromtxt("./data/agents.data", delimiter=',', dtype=int)
@@ -33,10 +34,10 @@ X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=
 # counter = Counter(y_train)
 # print(counter)
 
-# oversample = SMOTE(sampling_strategy=0.15)
-# undersample = RandomUnderSampler(sampling_strategy=0.5)
-# pipeline = Pipeline(steps=[('oversample', oversample), ('undersample', undersample)])
-# X_train, y_train = pipeline.fit_resample(X_train, y_train)
+oversample = SMOTE(sampling_strategy=0.15)
+undersample = RandomUnderSampler(sampling_strategy=0.5)
+pipeline = Pipeline(steps=[('oversample', oversample), ('undersample', undersample)])
+X_train, y_train = pipeline.fit_resample(X_train, y_train)
 
 # print("Destribution after...")
 # counter = Counter(y_train)
@@ -75,17 +76,33 @@ X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=
 # reg_dt.fit(X_train, y_train)
 # y_pred = reg_dt.predict(X_validation)
 
-# print(metrics.classification_report(y_validation, y_pred))
+
+# Multi-layer perceptron
+# From generator.py
+max_agents = 10
+max_test_nodes = 5
+
+# input is of the following form: (test assignment graph, test result vector, agent identifier)
+# size of test assignment graph = agents.max_agents * agents.max_test_nodes
+# size of test result vector = agents.max_test_nodes
+# size of agent identifier = 1
+num_input_nodes = max_agents * max_test_nodes + max_test_nodes + 1
+num_hidden_nodes = round(num_input_nodes / 2)
+
+model = MLPClassifier(solver='sgd', hidden_layer_sizes=(num_hidden_nodes, 2), max_iter=250, verbose=True)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_validation)
+
+print(metrics.classification_report(y_validation, y_pred, zero_division=0.0))
 
 
 # Try different values for k_neighbors and print the ROC area under curve metric
-k_values = [1, 2, 3, 4, 5, 6, 7]
-for k in k_values:
-    steps = [('over', SMOTE(sampling_strategy=0.15, k_neighbors=k)), ('under', RandomUnderSampler(sampling_strategy=0.5)), ('model', DecisionTreeClassifier())]
-    pipeline = Pipeline(steps=steps)
+# k_values = [1, 2, 3, 4, 5, 6, 7]
+# for k in k_values:
+#     steps = [('over', SMOTE(sampling_strategy=0.15, k_neighbors=k)), ('under', RandomUnderSampler(sampling_strategy=0.5)), ('model', DecisionTreeClassifier())]
+#     pipeline = Pipeline(steps=steps)
 
-    cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-    scores = cross_val_score(pipeline, X, y, scoring='roc_auc', cv=cv, n_jobs=-1)
-    score = np.mean(scores)
-    print('> k=%d, Mean ROC AUC: %.3f' % (k, score))
-
+#     cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+#     scores = cross_val_score(pipeline, X, y, scoring='roc_auc', cv=cv, n_jobs=-1)
+#     score = np.mean(scores)
+#     print('> k=%d, Mean ROC AUC: %.3f' % (k, score))
