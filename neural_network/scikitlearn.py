@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline
+from imblearn.under_sampling import RandomUnderSampler
 
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
@@ -16,13 +18,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 
-
-
-# From generator.py
-max_agents = 10
-max_test_nodes = 5
-
-num_input_nodes = max_agents * max_test_nodes + max_test_nodes + 1
 
 data = np.genfromtxt("./data/agents.data", delimiter=',', dtype=int)
 
@@ -36,8 +31,10 @@ print("Destribution before...")
 counter = Counter(y_train)
 print(counter)
 
-oversample = SMOTE()
-X_train, y_train = oversample.fit_resample(X_train, y_train)
+oversample = SMOTE(sampling_strategy=0.15)
+undersample = RandomUnderSampler(sampling_strategy=0.5)
+pipeline = Pipeline(steps=[('oversample', oversample), ('undersample', undersample)])
+X_train, y_train = pipeline.fit_resample(X_train, y_train)
 
 print("Destribution after...")
 counter = Counter(y_train)
