@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from collections import Counter
 
-from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import ADASYN, SMOTE
 from imblearn.pipeline import Pipeline
 from imblearn.under_sampling import RandomUnderSampler
 
@@ -34,9 +34,14 @@ X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=
 # counter = Counter(y_train)
 # print(counter)
 
-oversample = SMOTE(sampling_strategy=0.15)
-undersample = RandomUnderSampler(sampling_strategy=0.5)
-pipeline = Pipeline(steps=[('oversample', oversample), ('undersample', undersample)])
+oversample = SMOTE()
+# oversample = ADASYN()
+undersample = RandomUnderSampler()
+steps = [
+    ('oversample', oversample),
+    # ('undersample', undersample)
+]
+pipeline = Pipeline(steps=steps)
 X_train, y_train = pipeline.fit_resample(X_train, y_train)
 
 # print("Destribution after...")
@@ -89,7 +94,7 @@ max_test_nodes = 5
 num_input_nodes = max_agents * max_test_nodes + max_test_nodes + 1
 num_hidden_nodes = round(num_input_nodes / 2)
 
-model = MLPClassifier(solver='sgd', hidden_layer_sizes=(num_hidden_nodes, 2), max_iter=250, verbose=True)
+model = MLPClassifier(solver='sgd', hidden_layer_sizes=(num_hidden_nodes, 2), max_iter=20000, verbose=True)
 model.fit(X_train, y_train)
 y_pred = model.predict(X_validation)
 
