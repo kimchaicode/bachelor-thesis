@@ -30,23 +30,22 @@ y = np.array([row[len(row) - 1] for row in data])
 X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
 
 # Apply over- and undersampling
-# print("Destribution before...")
-# counter = Counter(y_train)
-# print(counter)
+print("Destribution before...")
+print(Counter(y_train))
 
-oversample = SMOTE()
-# oversample = ADASYN()
+# - [ ] Check default `sampling_strategy` parameters
+oversample = SMOTE(sampling_strategy=0.5)
+X_train, y_train = oversample.fit_resample(X_train, y_train)
+
+print("Destribution after oversampling...")
+print(Counter(y_train))
+
 undersample = RandomUnderSampler()
-steps = [
-    ('oversample', oversample),
-    # ('undersample', undersample)
-]
-pipeline = Pipeline(steps=steps)
-X_train, y_train = pipeline.fit_resample(X_train, y_train)
+X_train, y_train = undersample.fit_resample(X_train, y_train)
 
-# print("Destribution after...")
-# counter = Counter(y_train)
-# print(counter)
+# - [ ] Print class distributions/ Counter(y) to check if resampling worked
+print("Destribution after undersampling...")
+print(Counter(y_train))
 
 
 # Try different classifiers...
