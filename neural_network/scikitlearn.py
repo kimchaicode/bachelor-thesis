@@ -1,5 +1,9 @@
 # TODO After we have a working solution, we can compare all classifiers from
 # https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html
+import sys
+sys.path.append("../config")
+
+from config import Config
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -82,15 +86,11 @@ print(Counter(y_train))
 
 
 # Multi-layer perceptron
-# From generator.py
-max_agents = 10
-max_test_nodes = 5
-
 # input is of the following form: (test assignment graph, test result vector, agent identifier)
 # size of test assignment graph = agents.max_agents * agents.max_test_nodes
 # size of test result vector = agents.max_test_nodes
 # size of agent identifier = 1
-num_input_nodes = max_agents * max_test_nodes + max_test_nodes + 1
+num_input_nodes = Config.max_agents * Config.max_test_nodes + Config.max_test_nodes + 1
 num_hidden_nodes = round(num_input_nodes / 2)
 
 model = MLPClassifier(solver='sgd', hidden_layer_sizes=(num_hidden_nodes, 2), max_iter=20000, verbose=True)

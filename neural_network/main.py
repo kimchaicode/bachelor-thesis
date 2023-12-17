@@ -37,25 +37,25 @@
 # > the optimal size of the hidden layer is usually between the size of the input and size of the output layers
 # > the number of neurons in that layer is the mean of the neurons in the input and output layers.
 
+import sys
+sys.path.append("../config")
+
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
+from config import Config
 from torch.utils.data import DataLoader
 from torchmetrics.classification import BinaryConfusionMatrix, BinaryF1Score
 
 from data import agents
 from imbalanced_dataset import get_weighted_random_sampler
 
-# From generator.py
-max_agents = 10
-max_test_nodes = 5
-
 # input is of the following form: (test assignment graph, test result vector, agent identifier)
 # size of test assignment graph = agents.max_agents * agents.max_test_nodes
 # size of test result vector = agents.max_test_nodes
 # size of agent identifier = 1
-num_input_nodes = max_agents * max_test_nodes + max_test_nodes + 1
+num_input_nodes = Config.max_agents * Config.max_test_nodes + Config.max_test_nodes + 1
 num_hidden_nodes = round(num_input_nodes / 2)
 
 # 1. Set up the neural network with layers and activation function

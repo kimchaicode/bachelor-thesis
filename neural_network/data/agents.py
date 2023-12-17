@@ -2,13 +2,10 @@ import math
 
 import numpy as np
 
+from config.config import Config
 from torch.utils.data.dataset import Dataset
 
-
-# From generator.py
-max_agents = 10
-number_of_samples_per_agent = 150
-number_of_samples = number_of_samples_per_agent * max_agents
+number_of_samples = Config.number_of_samples_per_agent * Config.max_agents
 
 class AgentDataset(Dataset):
 
