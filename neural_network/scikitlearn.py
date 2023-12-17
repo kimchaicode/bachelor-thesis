@@ -24,8 +24,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 
-
-data = np.genfromtxt("./data/agents.data", delimiter=',', dtype=int)
+# load data in a program from a text file
+data = np.genfromtxt("../generator/results/agents.data", delimiter=',', dtype=int)
 
 # TODO: Optimize splitting
 X = np.array([row[:len(row) - 1] for row in data])
