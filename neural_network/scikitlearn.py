@@ -93,7 +93,7 @@ print(Counter(y_train))
 num_input_nodes = Config.max_agents * Config.max_test_nodes + Config.max_test_nodes + 1
 num_hidden_nodes = round(num_input_nodes / 2)
 
-model = MLPClassifier(solver='adam', hidden_layer_sizes=(num_hidden_nodes,), early_stopping=True, verbose=True)
+model = MLPClassifier(solver='adam', hidden_layer_sizes=(num_hidden_nodes,num_hidden_nodes,), early_stopping=True, verbose=True)
 model.fit(X_train, y_train)
 y_pred = model.predict(X_validation)
 
