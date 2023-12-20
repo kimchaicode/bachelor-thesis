@@ -8,13 +8,7 @@ from config import Config
 import numpy as np
 import matplotlib.pyplot as plt
 
-from collections import Counter
-
-from imblearn.over_sampling import ADASYN, SMOTE
-from imblearn.pipeline import Pipeline
-from imblearn.under_sampling import RandomUnderSampler
-
-from sklearn import metrics
+from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.model_selection import cross_val_score, train_test_split, RepeatedStratifiedKFold
 
 from sklearn.linear_model import LogisticRegression
@@ -24,6 +18,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 
+from resampling import resample
+
+
 # load data in a program from a text file
 data = np.genfromtxt("../generator/results/agents.data", delimiter=',', dtype=int)
 
@@ -31,25 +28,13 @@ data = np.genfromtxt("../generator/results/agents.data", delimiter=',', dtype=in
 X = np.array([row[:len(row) - 1] for row in data])
 y = np.array([row[len(row) - 1] for row in data])
 
+graph = None
+ax = plt.gca()
+
+
 X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
 
-# Apply over- and undersampling
-print("Destribution before...")
-print(Counter(y_train))
-
-# - [ ] Check default `sampling_strategy` parameters
-oversample = SMOTE(sampling_strategy=0.5)
-X_train, y_train = oversample.fit_resample(X_train, y_train)
-
-print("Destribution after oversampling...")
-print(Counter(y_train))
-
-undersample = RandomUnderSampler()
-X_train, y_train = undersample.fit_resample(X_train, y_train)
-
-# - [ ] Print class distributions/ Counter(y) to check if resampling worked
-print("Destribution after undersampling...")
-print(Counter(y_train))
+X_train, y_train = resample(X_train, y_train)
 
 
 # Try different classifiers...
@@ -62,27 +47,42 @@ print(Counter(y_train))
 
 
 # Random forest decision tree
-# reg_rf = RandomForestClassifier()
-# reg_rf.fit(X_train, y_train)
-# y_pred = reg_rf.predict(X_validation)
+# print("Training random forest...")
+# rf = RandomForestClassifier()
+# rf.fit(X_train, y_train)
+# y_pred = rf.predict(X_validation)
 
 
 # Support vector machine
-# reg_svc = SVC()
-# reg_svc.fit(X_train, y_train)
-# y_pred = reg_svc.predict(X_validation)
+# print("Training SVC...")
+# svc = SVC()
+# svc.fit(X_train, y_train)
+# y_pred = svc.predict(X_validation)
 
 
 # Nearest neighbours
-# reg_knn = KNeighborsClassifier()
-# reg_knn.fit(X_train, y_train)
-# y_pred = reg_knn.predict(X_validation)
+# print("Training k nearest neighbours...")
+# knn = KNeighborsClassifier()
+# knn.fit(X_train, y_train)
+# y_pred = knn.predict(X_validation)
 
 
 # Decision tree
-# reg_dt = DecisionTreeClassifier()
-# reg_dt.fit(X_train, y_train)
-# y_pred = reg_dt.predict(X_validation)
+# dt = DecisionTreeClassifier()
+# dt.fit(X_train, y_train)
+# y_pred = dt.predict(X_validation)
+
+# print("ROC for rfc...")
+# rfc_disp = metrics.RocCurveDisplay.from_estimator(rf, X_validation, y_validation, ax=ax, alpha=0.8)
+# print("ROC for svc...")
+# svc_disp = metrics.RocCurveDisplay.from_estimator(svc, X_validation, y_validation)
+# svc_disp.plot(ax=ax, alpha=0.8)
+# print("ROC for knn...")
+# knn_disp = metrics.RocCurveDisplay.from_estimator(knn, X_validation, y_validation)
+# knn_disp.plot(ax=ax, alpha=0.8)
+
+# print("Showing plot...")
+# plt.show()
 
 
 # Multi-layer perceptron
@@ -93,11 +93,14 @@ print(Counter(y_train))
 num_input_nodes = Config.max_agents * Config.max_test_nodes + Config.max_test_nodes + 1
 num_hidden_nodes = round(num_input_nodes / 2)
 
-model = MLPClassifier(solver='adam', hidden_layer_sizes=(num_hidden_nodes,num_hidden_nodes,), early_stopping=True, verbose=True)
+model = MLPClassifier(solver='adam', hidden_layer_sizes=(num_hidden_nodes,), early_stopping=True, verbose=True)
 model.fit(X_train, y_train)
 y_pred = model.predict(X_validation)
 
-print(metrics.classification_report(y_validation, y_pred, zero_division=0.0))
+print(classification_report(y_validation, y_pred, zero_division=0.0))
+
+graph = RocCurveDisplay.from_estimator(model, X_validation, y_validation)
+plt.show()
 
 
 # Try different values for k_neighbors and print the ROC area under curve metric
