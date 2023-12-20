@@ -7,5 +7,5 @@ class Config:
 
     # we generate a row per agent, because we do binary classification on the infection status of each agent
     # in total there will be number_of_samples_per_agent * max_agents rows
-    number_of_samples_per_agent = 25000
+    number_of_samples_per_agent = 50000
 
