@@ -26,20 +26,18 @@ y_original = np.array([row[len(row) - 1] for row in data])
 
 # sample_sizes = [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000]
 sample_size = 35000
-hidden_layer_size = Config.num_input_nodes * 2
-hidden_layers = [
-    { "name": "1", "nodes": (hidden_layer_size,) },
-    { "name": "2", "nodes": (hidden_layer_size,hidden_layer_size,) },
-    { "name": "3", "nodes": (hidden_layer_size,hidden_layer_size,hidden_layer_size,) },
-    { "name": "n>n", "nodes": (Config.num_input_nodes,Config.num_input_nodes,) },
-    { "name": "n>n>n", "nodes": (Config.num_input_nodes,Config.num_input_nodes,Config.num_input_nodes,) },
-    { "name": "2n>n", "nodes": (hidden_layer_size,round(hidden_layer_size / 2),) },
-    { "name": "n>2n", "nodes": (round(hidden_layer_size / 2),hidden_layer_size,) },
-    { "name": "2n>n>n", "nodes": (hidden_layer_size,round(hidden_layer_size / 2),round(hidden_layer_size / 2),) },
+# hidden_layer_size = Config.num_input_nodes * 2
+hidden_layers = (Config.num_input_nodes,Config.num_input_nodes,)
+learning_rates = [
+    0.0005,
+    0.00075,
+    0.001, # default
+    0.00125,
+    0.0015
 ]
 
-for (index, hidden_layer_configuration) in enumerate(hidden_layers):
-    print(f"Training {hidden_layer_configuration['nodes']}...")
+for (index, learning_rate) in enumerate(learning_rates):
+    print(f"Training {learning_rate}...")
 
     number_of_samples = sample_size * Config.max_agents
     X = X_original[:number_of_samples]
@@ -48,11 +46,11 @@ for (index, hidden_layer_configuration) in enumerate(hidden_layers):
     X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
     X_train, y_train = resample(X_train, y_train)
 
-    model = train_model(X_train, y_train, hidden_layers=hidden_layer_configuration["nodes"])
+    model = train_model(X_train, y_train, learning_rate=learning_rate)
 
     y_pred = model.predict(X_validation)
     print(classification_report(y_validation, y_pred, zero_division=0.0))
 
-    RocCurveDisplay.from_estimator(model, X_validation, y_validation, name=str(hidden_layer_configuration["name"]), ax=ax)
+    RocCurveDisplay.from_estimator(model, X_validation, y_validation, name=str(learning_rate), ax=ax)
 
 plt.show()
