@@ -43,14 +43,14 @@ for (index, batch_size) in enumerate(batch_sizes):
     X = X_original[:number_of_samples]
     y = y_original[:number_of_samples]
 
-    X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     X_train, y_train = resample(X_train, y_train)
 
     model = train_model(X_train, y_train, batch_size=batch_size)
 
-    y_pred = model.predict(X_validation)
-    print(classification_report(y_validation, y_pred, zero_division=0.0))
+    y_pred = model.predict(X_test)
+    print(classification_report(y_test, y_pred, zero_division=0.0))
 
-    RocCurveDisplay.from_estimator(model, X_validation, y_validation, name=str(batch_size), ax=ax)
+    RocCurveDisplay.from_estimator(model, X_test, y_test, name=str(batch_size), ax=ax)
 
 plt.show()
